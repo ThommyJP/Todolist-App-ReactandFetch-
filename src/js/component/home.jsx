@@ -3,18 +3,30 @@ import React, {useState} from "react";
 
 //create your first component
 const Home = () => {
-	const [todo,todoUpdate]=useState("")
-	const [list,listUpdate]=useState([])
+	const [todo,setTodo]=useState("")
+	const [list,setList]=useState([])
 	
 	// const addToList = list.map("<li> list.[] </li>")
 
-	//funcion al clikear "enter" hace que agrege a listUpdate
+	//funcion al clikear "enter" hace que agrege a setList
 
 	const handleKeyDown = (e) => {
 		if (e.key === 'Enter'){
-			listUpdate([...list, todo])
+			setList([...list, todo])
+			setTodo("")
 		}
 	}
+
+	function eliminar (index){
+		let newList = list.filter((element, i)=>{
+			if (index !== i){
+				return element;
+			}
+		})
+			setList(newList);
+			console.log(list)
+	}
+
 
 	// const deleteTodo = () => {
 	// 	let newTodo = list.filter((item, index) => )
@@ -33,9 +45,9 @@ const Home = () => {
 					<h3 className="todocolor "> Todo List</h3>
 					<input type="text" 
 					placeholder="What needs to be done?" 
-					className="todo" 
-					onChange={(e)=>{todoUpdate(e.target.value)}}
+					onChange={e=>setTodo(e.target.value)}
 					onKeyDown = {handleKeyDown}
+					value = {todo}
 					/>
 				</div>
 
@@ -46,17 +58,11 @@ const Home = () => {
 					<div className="col-6">
 						<ul className="justify-content-center text-center">
 							
-							{// Aca lo que hicimos fue hacer un "map" (recorrer TODOS los objetos del array)
-							 // y luego definimos "item" (esto es el texto o variable que uno escriba)
-							 // "index" (esto es la posicion especifica del objeto en array)
-							 // luego hacemos arrow function y "escribimos como queremos que se vea el texto"
-							 // abrimos con un <li> y le damos atributos como el "key, que usa el index"
-							 // ME PARECE que eso es necesario para que entonces se DEFINA 
-							 // como unico ese elemento del array y despues poder manipularlo mejor
-							}
-							{ list.map((item, index) => (
-								<li className="bg-warning" key={index}> {item} 
-									<button type="button" className="btn-close float-end displayHover" aria-label="Close"></button> 
+
+							{ list?.map((item, index) => (
+								<li className="bg-warning" key={index}> {item}
+									<span className="displayHover float-end" onClick={()=>eliminar(index)}> X</span>
+								
 								</li>
 								))} 
 						</ul>
