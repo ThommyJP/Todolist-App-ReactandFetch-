@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
  
 
 //create your first component
@@ -6,13 +6,58 @@ const Home = () => {
 	const [todo,setTodo]=useState("")
 	const [list,setList]=useState([])
 	
-	// const addToList = list.map("<li> list.[] </li>")
+	// function "traertarea" usa FETCH y METHOD "Get" para traer el array vacio
+	const traerToDo = () => {
+		fetch( 'http://assets.breatheco.de/apis/fake/todos/user/wishmastering' , {
+			method: "GET",
+			headers: { "Content-Type":"application/json"
+				}
+			}
+		)
+		.then((response) => response.json()) // esto lo que hace es convertirlo en JSON
+		.then((data) => setList(data))		 // esto lo que hace es meter el dato en "setList"
+	}
+
+	// Lo siguiente es codigo proveido directamente por 4Geeks, lo haremos en un 
+	// "useEffect" para CARGAR ESE CODIGO CADA VEZ QUE ACTUALICE MI LIST
+	// Ya que ese codigo que nos da 4Geeks es PRECISAMENTE para actualizar
+	// en la nube "usando APIs" mi List
+
+
+	useEffect(() => {
+		fetch('https://assets.breatheco.de/apis/fake/todos/user/wishmastering', 
+		{
+			method: "PUT",
+			body: JSON.stringify(list),
+			headers: {
+			  "Content-Type": "application/json"
+			}}
+			)
+		  .then(resp => {
+			  console.log(resp.ok); // will be true if the response is successfull
+			  console.log(resp.status); // the status code = 200 or code = 400 etc.
+			  console.log(resp.text()); // will try return the exact result as string
+			  return resp.json(); // (returns promise) will try to parse the result as json as return a promise that you can .then for results
+		  })
+		  .then(data => {
+			  //here is were your code should start after the fetch finishes
+			  console.log(data); //this will print on the console the exact object received from the server
+		  })
+		  .catch(error => {
+			  //error handling
+			  console.log(error);
+		  });
+		}, [list]);
+		
+		// el "trigger" de este useEffect sera "list", cada vez que "list" cambia, la funcion correra
+
+
 
 	//funcion al clikear "enter" hace que agrege a setList
 
 	const handleKeyDown = (e) => {
 		if (e.key === 'Enter'){
-			setList([...list, todo])
+			setList([...list, { label: todo, done: false}])
 			setTodo("")
 		}
 	}
@@ -26,11 +71,6 @@ const Home = () => {
 			setList(newList);
 			console.log(list)
 	}
-
-
-	// const deleteTodo = () => {
-	// 	let newTodo = list.filter((item, index) => )
-	// }
 
 	return (
 			<div className="bg-dark">
@@ -60,7 +100,7 @@ const Home = () => {
 							
 
 							{ list?.map((item, index) => (
-								<li className="bg-warning" key={index}> {item}
+								<li className="bg-warning" key={index}> {item.label}
 									<span className="displayHover float-end" onClick={()=>eliminar(index)}> X</span>
 								
 								</li>
